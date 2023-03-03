@@ -1,33 +1,36 @@
 import requests
 
+def consultar_dni(dni):
+    url_dni = f"https://api.apis.net.pe/v1/dni?numero={dni}"
+    response_dni = requests.get(url_dni)
+    data_dni = response_dni.json()
+    nombre_completo = f"{data_dni['apellidoPaterno']} {data_dni['apellidoMaterno']}, {data_dni['nombres']}"
+    dni = data_dni['numeroDocumento']
+    return nombre_completo, dni
+
+def consultar_ruc(ruc):
+    url_ruc = f"https://api.apis.net.pe/v1/ruc?numero={ruc}"
+    response_ruc = requests.get(url_ruc)
+    data_ruc = response_ruc.json()
+    ruc = data_ruc['numeroDocumento']
+    estado = data_ruc['estado']
+    condicion = data_ruc['condicion']
+    return ruc, estado, condicion
+
 dni = input("Ingrese el número de DNI: ")
 ruc = input("Ingrese el número de RUC: ")
 
-# Consulta del DNI
-url_dni = f"https://api.apis.net.pe/v1/dni?numero={dni}"
-response_dni = requests.get(url_dni)
-
-if response_dni.ok:
-    try:
-        data_dni = response_dni.json()
-        print(f"Nombre completo: {data_dni['apellidoPaterno']} {data_dni['apellidoMaterno']}, {data_dni['nombres']}")
-        print(f"DNI: {data_dni['numeroDocumento']}")
-    except ValueError:
-        print("La respuesta del servidor no contiene datos JSON válidos.")
-else:
+try:
+    nombre_completo, dni = consultar_dni(dni)
+    print(f"Nombre completo: {nombre_completo}")
+    print(f"DNI: {dni}")
+except:
     print("No se pudo obtener información del DNI ingresado.")
 
-# Consulta del RUC
-url_ruc = f"https://api.apis.net.pe/v1/ruc?numero={ruc}"
-response_ruc = requests.get(url_ruc)
-
-if response_ruc.ok:
-    try:
-        data_ruc = response_ruc.json()
-        print(f"RUC: {data_ruc['numeroDocumento']}")
-        print(f"Estado: {data_ruc['estado']}")
-        print(f"Condicion: {data_ruc['condicion']}")
-    except ValueError:
-        print("La respuesta del servidor no contiene datos JSON válidos.")
-else:
+try:
+    ruc, estado, condicion = consultar_ruc(ruc)
+    print(f"RUC: {ruc}")
+    print(f"Estado: {estado}")
+    print(f"Condicion: {condicion}")
+except:
     print("No se pudo obtener información del RUC ingresado.")
